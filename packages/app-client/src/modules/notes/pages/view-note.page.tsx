@@ -137,7 +137,7 @@ export const ViewNotePage: Component = () => {
       return;
     }
 
-    const { encryptionKey, isPasswordProtected, isDeletedAfterReading } = parsedHashFragment;
+    const { encryptionKey: hashEncryptionKey, isPasswordProtected, isDeletedAfterReading } = parsedHashFragment;
 
     if (isDeletedAfterReading) {
       const [noteExistsResult, noteExistsError] = await safely(fetchNoteExists({ noteId: params.noteId }));
@@ -164,15 +164,6 @@ export const ViewNotePage: Component = () => {
     }
 
     setIsPasswordProtected(isPasswordProtected);
-    setEncryptionKey(encryptionKey);
-
-    if (!encryptionKey) {
-      setError({
-        title: t('view.error.invalid-url.title'),
-        description: t('view.error.invalid-url.description'),
-      });
-      return;
-    }
 
     const [fetchedNote, fetchError] = await safely(fetchNoteById({ noteId: params.noteId }));
 
@@ -221,7 +212,19 @@ export const ViewNotePage: Component = () => {
     }
 
     const { note } = fetchedNote;
+    
+    // Get encryption key from server (or fallback to hash for backwards compatibility)
+    const encryptionKey = note.encryptionKey || hashEncryptionKey;
 
+    if (!encryptionKey) {
+      setError({
+        title: t('view.error.invalid-url.title'),
+        description: t('view.error.invalid-url.description'),
+      });
+      return;
+    }
+
+    setEncryptionKey(encryptionKey);
     setNote(note);
 
     if (getIsPasswordProtected()) {

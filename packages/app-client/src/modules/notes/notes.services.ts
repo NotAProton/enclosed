@@ -9,6 +9,7 @@ async function storeNote({
   encryptionAlgorithm,
   serializationFormat,
   isPublic,
+  encryptionKey,
 }: {
   payload: string;
   ttlInSeconds?: number;
@@ -16,6 +17,7 @@ async function storeNote({
   encryptionAlgorithm: string;
   serializationFormat: string;
   isPublic?: boolean;
+  encryptionKey?: string;
 }) {
   const { noteId } = await apiClient<{ noteId: string }>({
     path: '/api/notes',
@@ -27,6 +29,7 @@ async function storeNote({
       serializationFormat,
       encryptionAlgorithm,
       isPublic,
+      encryptionKey,
     },
   });
 
@@ -40,6 +43,7 @@ async function fetchNoteById({ noteId }: { noteId: string }) {
     assets: string[];
     serializationFormat: string;
     encryptionAlgorithm: string;
+    encryptionKey?: string;
   }; }>({
     path: `/api/notes/${noteId}`,
     method: 'GET',

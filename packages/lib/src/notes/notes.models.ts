@@ -7,10 +7,10 @@ const PASSWORD_PROTECTED_HASH_FRAGMENT = 'pw';
 const DELETED_AFTER_READING_HASH_FRAGMENT = 'dar';
 
 function createNoteUrlHashFragment({ encryptionKey, isPasswordProtected, isDeletedAfterReading }: { encryptionKey: string; isPasswordProtected?: boolean; isDeletedAfterReading?: boolean }) {
+  // No longer include encryption key in URL hash - it's stored on server
   const hashFragment = [
     isPasswordProtected && PASSWORD_PROTECTED_HASH_FRAGMENT,
     isDeletedAfterReading && DELETED_AFTER_READING_HASH_FRAGMENT,
-    encryptionKey,
   ].filter(Boolean).join(':');
 
   return hashFragment;
@@ -19,23 +19,40 @@ function createNoteUrlHashFragment({ encryptionKey, isPasswordProtected, isDelet
 function parseNoteUrlHashFragment({ hashFragment }: { hashFragment: string }) {
   const cleanedHashFragment = hashFragment.replace(/^#/, '');
 
+  // If hash is empty, that's OK now - encryption key comes from server
   if (isEmpty(cleanedHashFragment)) {
-    throw new Error('Hash fragment is missing');
+    return {
+      encryptionKey: undefined,
+      isPasswordProtected: false,
+      isDeletedAfterReading: false,
+    };
   }
 
   const segments = cleanedHashFragment.split(':');
-  const encryptionKey = segments.pop();
+  
+  // Check if last segment is an encryption key (for backwards compatibility)
+  const lastSegment = segments[segments.length - 1];
+  const isLastSegmentFlag = [PASSWORD_PROTECTED_HASH_FRAGMENT, DELETED_AFTER_READING_HASH_FRAGMENT].includes(lastSegment);
+  
+  let encryptionKey: string | undefined;
+  let flags = segments;
+  
+  if (!isLastSegmentFlag && segments.length > 0) {
+    // Last segment is encryption key (backwards compatibility)
+    encryptionKey = segments.pop();
+    flags = segments;
+  }
 
-  const hasInvalidSegments = segments.some(segment => ![PASSWORD_PROTECTED_HASH_FRAGMENT, DELETED_AFTER_READING_HASH_FRAGMENT].includes(segment));
+  const hasInvalidSegments = flags.some(segment => ![PASSWORD_PROTECTED_HASH_FRAGMENT, DELETED_AFTER_READING_HASH_FRAGMENT].includes(segment));
 
-  if (!encryptionKey || hasInvalidSegments) {
+  if (hasInvalidSegments) {
     throw new Error('Invalid hash fragment');
   }
 
   return {
     encryptionKey,
-    isPasswordProtected: segments.includes(PASSWORD_PROTECTED_HASH_FRAGMENT),
-    isDeletedAfterReading: segments.includes(DELETED_AFTER_READING_HASH_FRAGMENT),
+    isPasswordProtected: flags.includes(PASSWORD_PROTECTED_HASH_FRAGMENT),
+    isDeletedAfterReading: flags.includes(DELETED_AFTER_READING_HASH_FRAGMENT),
   };
 }
 
