@@ -41,6 +41,7 @@ async function createNote({
     encryptionAlgorithm: EncryptionAlgorithm;
     serializationFormat: SerializationFormat;
     isPublic?: boolean;
+    encryptionKey?: string;
   }) => Promise<{ noteId: string }>;
 }) {
   const { encryptedPayload, encryptionKey } = await encryptNote({ content, password, assets, encryptionAlgorithm, serializationFormat });
@@ -53,6 +54,7 @@ async function createNote({
     encryptionAlgorithm,
     serializationFormat,
     isPublic,
+    encryptionKey, // Send encryption key to server
   });
 
   const { noteUrl } = createNoteUrl({

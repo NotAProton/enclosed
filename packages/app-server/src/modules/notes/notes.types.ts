@@ -10,6 +10,7 @@ export type DatabaseNote = {
   expirationDate?: string;
   deleteAfterReading: boolean;
   isPublic: boolean;
+  encryptionKey?: string; // Store the encryption key on the server side
 
   // compressionAlgorithm: string
   // keyDerivationAlgorithm: string;

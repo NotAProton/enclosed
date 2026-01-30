@@ -41,6 +41,7 @@ async function saveNote(
     encryptionAlgorithm,
     serializationFormat,
     isPublic,
+    encryptionKey,
   }:
   {
     payload: string;
@@ -52,16 +53,31 @@ async function saveNote(
     encryptionAlgorithm: string;
     serializationFormat: string;
     isPublic: boolean;
+    encryptionKey?: string;
   },
 ): Promise<{ noteId: string }> {
   try {
-    const noteId = generateNoteId();
+    // Generate unique ID with collision detection
+    let noteId: string;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    do {
+      noteId = generateNoteId();
+      attempts++;
+
+      if (attempts >= maxAttempts) {
+        throw new Error('Failed to generate unique note ID after maximum attempts');
+      }
+    } while (await storage.hasItem(noteId));
+
     const baseNote = {
       payload,
       deleteAfterReading,
       encryptionAlgorithm,
       serializationFormat,
       isPublic,
+      encryptionKey, // Store the encryption key
     };
 
     if (!ttlInSeconds) {
