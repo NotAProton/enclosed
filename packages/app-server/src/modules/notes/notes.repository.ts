@@ -41,6 +41,7 @@ async function saveNote(
     encryptionAlgorithm,
     serializationFormat,
     isPublic,
+    encryptionKey,
   }:
   {
     payload: string;
@@ -52,6 +53,7 @@ async function saveNote(
     encryptionAlgorithm: string;
     serializationFormat: string;
     isPublic: boolean;
+    encryptionKey?: string;
   },
 ): Promise<{ noteId: string }> {
   try {
@@ -62,6 +64,7 @@ async function saveNote(
       encryptionAlgorithm,
       serializationFormat,
       isPublic,
+      encryptionKey, // Store the encryption key
     };
 
     if (!ttlInSeconds) {

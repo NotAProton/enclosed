@@ -1,9 +1,9 @@
-import { ulidFactory } from 'ulid-workers';
+import { commonWords } from './word-list';
 
 export { generateId };
 
-const createUlid = ulidFactory();
-
 function generateId() {
-  return createUlid().toLowerCase();
+  // Generate a random word from the common words list
+  const randomIndex = Math.floor(Math.random() * commonWords.length);
+  return commonWords[randomIndex];
 }

@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { registerNotesRoutes } from '../notes/notes.routes';
 import { authenticationMiddleware } from './auth/auth.middleware';
+import { basicAuthMiddleware } from './auth/basic-auth.middleware';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerConfigRoutes } from './config/config.routes';
 import { createConfigMiddleware } from './middlewares/config.middleware';
@@ -21,6 +22,7 @@ function createServer({ config, storageFactory }: { config?: Config; storageFact
 
   app.use(loggerMiddleware);
   app.use(createConfigMiddleware({ config }));
+  app.use(basicAuthMiddleware);
   app.use(timeoutMiddleware);
   app.use(corsMiddleware);
   app.use(createStorageMiddleware({ storageFactory }));

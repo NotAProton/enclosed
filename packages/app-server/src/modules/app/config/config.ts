@@ -252,6 +252,18 @@ export const configDefinition = {
       default: '',
       env: 'AUTHENTICATION_USERS',
     },
+    basicAuthUsername: {
+      doc: 'Username for basic authentication to access the entire application',
+      schema: z.string().optional(),
+      default: undefined,
+      env: 'BASIC_AUTH_USERNAME',
+    },
+    basicAuthPassword: {
+      doc: 'Password for basic authentication to access the entire application',
+      schema: z.string().optional(),
+      default: undefined,
+      env: 'BASIC_AUTH_PASSWORD',
+    },
   },
 } as const satisfies ConfigDefinition;
 

@@ -102,6 +102,7 @@ function setupCreateNoteRoute({ app }: { app: ServerInstance }) {
         serializationFormat: z.enum(serializationFormats),
 
         isPublic: z.boolean().optional().default(true),
+        encryptionKey: z.string().optional(), // Accept encryption key from client
       }),
     ),
 
@@ -125,12 +126,12 @@ function setupCreateNoteRoute({ app }: { app: ServerInstance }) {
     },
 
     async (context) => {
-      const { payload, ttlInSeconds, deleteAfterReading, encryptionAlgorithm, serializationFormat, isPublic } = context.req.valid('json');
+      const { payload, ttlInSeconds, deleteAfterReading, encryptionAlgorithm, serializationFormat, isPublic, encryptionKey } = context.req.valid('json');
       const storage = context.get('storage');
 
       const notesRepository = createNoteRepository({ storage });
 
-      const { noteId } = await notesRepository.saveNote({ payload, ttlInSeconds, deleteAfterReading, encryptionAlgorithm, serializationFormat, isPublic });
+      const { noteId } = await notesRepository.saveNote({ payload, ttlInSeconds, deleteAfterReading, encryptionAlgorithm, serializationFormat, isPublic, encryptionKey });
 
       return context.json({ noteId });
     },
