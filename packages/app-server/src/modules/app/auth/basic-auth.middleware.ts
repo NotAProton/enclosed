@@ -1,4 +1,5 @@
 import type { Context } from '../server.types';
+import { Buffer } from 'node:buffer';
 import { createMiddleware } from 'hono/factory';
 
 export const basicAuthMiddleware = createMiddleware(async (context: Context, next) => {

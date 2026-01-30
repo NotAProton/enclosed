@@ -212,7 +212,7 @@ export const ViewNotePage: Component = () => {
     }
 
     const { note } = fetchedNote;
-    
+
     // Get encryption key from server (or fallback to hash for backwards compatibility)
     const encryptionKey = note.encryptionKey || hashEncryptionKey;
 
