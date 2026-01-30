@@ -102,7 +102,7 @@ function setupCreateNoteRoute({ app }: { app: ServerInstance }) {
         serializationFormat: z.enum(serializationFormats),
 
         isPublic: z.boolean().optional().default(true),
-        encryptionKey: z.string().optional(), // Accept encryption key from client
+        encryptionKey: z.string().min(1).optional(), // Accept encryption key from client with minimum length validation
       }),
     ),
 

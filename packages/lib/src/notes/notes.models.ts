@@ -7,7 +7,8 @@ const PASSWORD_PROTECTED_HASH_FRAGMENT = 'pw';
 const DELETED_AFTER_READING_HASH_FRAGMENT = 'dar';
 
 function createNoteUrlHashFragment({ encryptionKey, isPasswordProtected, isDeletedAfterReading }: { encryptionKey: string; isPasswordProtected?: boolean; isDeletedAfterReading?: boolean }) {
-  // No longer include encryption key in URL hash - it's stored on server
+  // Encryption keys are no longer included in URL hash by default
+  // They are stored on the server instead for simplified URLs
   const hashFragment = [
     isPasswordProtected && PASSWORD_PROTECTED_HASH_FRAGMENT,
     isDeletedAfterReading && DELETED_AFTER_READING_HASH_FRAGMENT,
@@ -29,14 +30,14 @@ function parseNoteUrlHashFragment({ hashFragment }: { hashFragment: string }) {
   }
 
   const segments = cleanedHashFragment.split(':');
-  
-  // Check if last segment is an encryption key (for backwards compatibility)
+
+  // Check if last segment is an encryption key (for backwards compatibility with old URLs)
   const lastSegment = segments[segments.length - 1];
   const isLastSegmentFlag = [PASSWORD_PROTECTED_HASH_FRAGMENT, DELETED_AFTER_READING_HASH_FRAGMENT].includes(lastSegment);
-  
+
   let encryptionKey: string | undefined;
   let flags = segments;
-  
+
   if (!isLastSegmentFlag && segments.length > 0) {
     // Last segment is encryption key (backwards compatibility)
     encryptionKey = segments.pop();

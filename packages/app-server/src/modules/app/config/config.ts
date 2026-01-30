@@ -253,14 +253,14 @@ export const configDefinition = {
       env: 'AUTHENTICATION_USERS',
     },
     basicAuthUsername: {
-      doc: 'Username for basic authentication to access the entire application',
+      doc: 'Username for basic authentication to access the entire application. SECURITY WARNING: Basic Auth credentials are Base64-encoded (not encrypted) and transmitted with every request. ALWAYS use HTTPS when this is enabled to protect credentials in transit. Both username and password must be set to enable authentication.',
       schema: z.string().optional(),
       default: undefined,
       env: 'BASIC_AUTH_USERNAME',
     },
     basicAuthPassword: {
-      doc: 'Password for basic authentication to access the entire application',
-      schema: z.string().optional(),
+      doc: 'Password for basic authentication to access the entire application. SECURITY WARNING: Use a strong, unique password. Basic Auth should only be used over HTTPS to prevent credential interception. Both username and password must be set to enable authentication.',
+      schema: z.string().min(8).optional(),
       default: undefined,
       env: 'BASIC_AUTH_PASSWORD',
     },

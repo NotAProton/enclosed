@@ -57,7 +57,20 @@ async function saveNote(
   },
 ): Promise<{ noteId: string }> {
   try {
-    const noteId = generateNoteId();
+    // Generate unique ID with collision detection
+    let noteId: string;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    do {
+      noteId = generateNoteId();
+      attempts++;
+
+      if (attempts >= maxAttempts) {
+        throw new Error('Failed to generate unique note ID after maximum attempts');
+      }
+    } while (await storage.hasItem(noteId));
+
     const baseNote = {
       payload,
       deleteAfterReading,
